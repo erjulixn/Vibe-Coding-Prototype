@@ -76,6 +76,31 @@ http://localhost:5678/webhook/<your-webhook-id>
 
 5. Type a prompt and click Generate Code.
 
+
+⚡ Temporary Live Demo (ngrok)
+
+To let others test without local setup:
+
+Install ngrok → https://ngrok.com/
+
+Run:
+
+ngrok http 5678
+
+
+Copy the HTTPS URL (e.g. https://abc123.ngrok.app).
+
+Build full webhook URL:
+
+https://abc123.ngrok.app/webhook/<your-webhook-id>
+
+
+Paste this into the frontend backend field → works from anywhere.
+
+⚠️ ngrok free URLs change each session. Use this only for temporary demo.
+
+
+
 🔍 Notes & Limitations
 
 Gemini sometimes wraps outputs in <iframe> or includes <html>/<body> tags.
@@ -98,3 +123,4 @@ Store past generations and allow users to copy/share code snippets.
 
 Keerthi Raj
 Email: keerthirajprofessional@gmail.com
+
