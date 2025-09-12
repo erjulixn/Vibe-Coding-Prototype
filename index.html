@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Vibe Coding Prototype</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { background-color: #0f1724; }
+    pre { white-space: pre-wrap; word-wrap: break-word; }
+    .small { font-size: 0.85rem; color: #9ca3af; }
+  </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-6">
+  <div class="w-full max-w-2xl bg-gray-900 rounded-xl p-6 shadow-lg">
+    <h1 class="text-2xl font-bold text-white">Vibe Coding ⚡</h1>
+    <p class="small mt-1">Describe a UI and the AI will generate HTML + CSS.</p>
+
+    <div class="mt-4 space-y-3">
+      <label class="small">Backend (n8n webhook) URL — paste ngrok or cloud URL here:</label>
+      <input id="backendUrl" class="w-full p-2 rounded bg-gray-800 text-white border border-gray-700" placeholder="http://localhost:5678/webhook/<your-id> or https://xxxx.ngrok.app/webhook/..." />
+      <div class="flex gap-2">
+        <button id="saveBackend" class="px-3 py-2 bg-indigo-600 rounded text-white">Save Backend URL</button>
+        <button id="resetBackend" class="px-3 py-2 bg-gray-700 rounded text-white">Reset</button>
+      </div>
+      <p class="small">Tip: If you want a temporary live demo, run <code>ngrok http 5678</code> and paste the HTTPS URL here (see README).</p>
+    </div>
+
+    <form id="vibeForm" class="mt-5 space-y-3">
+      <input id="vibeInput" type="text" required placeholder='e.g. "A large rounded blue button that says &quot;Click Me&quot;"' class="w-full p-3 rounded bg-gray-800 text-white border border-gray-700" />
+      <div class="flex gap-2">
+        <button type="submit" class="flex-1 py-2 bg-emerald-600 rounded text-white font-medium">Generate Code</button>
+        <button id="examplesBtn" type="button" class="px-3 py-2 bg-gray-700 rounded text-white">Examples</button>
+      </div>
+    </form>
+
+    <div id="loading" class="hidden mt-4 small">Generating... please wait.</div>
+
+    <div id="output" class="hidden mt-4">
+      <h2 class="text-white font-semibold">Generated Code</h2>
+      <div class="bg-black/70 p-3 rounded mt-2 border border-gray-700 overflow-x-auto">
+        <pre id="codeOutput" class="text-sm text-gray-200 font-mono"></pre>
+      </div>
+      <div class="mt-2 flex gap-2">
+        <button id="copyBtn" class="px-3 py-2 bg-blue-600 rounded text-white">Copy Code</button>
+        <button id="openPreview" class="px-3 py-2 bg-gray-700 rounded text-white">Open Preview (new tab)</button>
+      </div>
+    </div>
+
+    <div id="examplesPanel" class="hidden mt-4 bg-gray-800 p-3 rounded small">
+      <p><strong>Try these prompts:</strong></p>
+      <ul class="list-disc ml-5">
+        <li><button class="example px-2 py-1 rounded bg-gray-700 text-white" data-prompt='A large rounded blue button that says "Click Me" and gets lighter on hover'>Blue rounded button</button></li>
+        <li><button class="example px-2 py-1 rounded bg-gray-700 text-white" data-prompt='A dark card with rounded corners and centered "Hello World" text'>Dark card hello world</button></li>
+      </ul>
+    </div>
+
+    <p class="small mt-4">Notes: This static frontend requires a reachable n8n webhook. See README for instructions and ngrok demo steps.</p>
+  </div>
+
+  <script>
+    // Helpers
+    const backendInput = document.getElementById('backendUrl');
+    const saveBackend = document.getElementById('saveBackend');
+    const resetBackend = document.getElementById('resetBackend');
+    const vibeForm = document.getElementById('vibeForm');
+    const vibeInput = document.getElementById('vibeInput');
+    const loading = document.getElementById('loading');
+    const output = document.getElementById('output');
+    const codeOutput = document.getElementById('codeOutput');
+    const copyBtn = document.getElementById('copyBtn');
+    const openPreview = document.getElementById('openPreview');
+    const examplesBtn = document.getElementById('examplesBtn');
+    const examplesPanel = document.getElementById('examplesPanel');
+
+    // Load saved backend from localStorage
+    const STORAGE_KEY = 'vibe_backend_url';
+    backendInput.value = localStorage.getItem(STORAGE_KEY) || '';
+
+    saveBackend.addEventListener('click', () => {
+      localStorage.setItem(STORAGE_KEY, backendInput.value.trim());
+      alert('Backend URL saved.');
+    });
+    resetBackend.addEventListener('click', () => {
+      localStorage.removeItem(STORAGE_KEY);
+      backendInput.value = '';
+      alert('Backend URL cleared.');
+    });
+
+    examplesBtn.addEventListener('click', () => {
+      examplesPanel.classList.toggle('hidden');
+    });
+
+    document.querySelectorAll('.example').forEach(btn => {
+      btn.addEventListener('click', () => {
+        vibeInput.value = btn.dataset.prompt;
+      });
+    });
+
+    vibeForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      output.classList.add('hidden');
+      loading.classList.remove('hidden');
+      codeOutput.textContent = '';
+      const vibe = vibeInput.value.trim();
+      if (!vibe) { alert('Enter a prompt.'); loading.classList.add('hidden'); return; }
+
+      const backendUrl = (localStorage.getItem(STORAGE_KEY) || backendInput.value || '').trim();
+      if (!backendUrl) {
+        alert('Set the backend webhook URL first (ngrok or localhost). See README.');
+        loading.classList.add('hidden');
+        return;
+      }
+
+      // prepare fetch (supports both text and JSON responses)
+      try {
+        const url = backendUrl + (backendUrl.includes('?') ? '&' : '?') + 'prompt=' + encodeURIComponent(vibe);
+        const response = await fetch(url);
+        const contentType = response.headers.get('content-type') || '';
+        let resultText = '';
+        if (contentType.includes('application/json')) {
+          const data = await response.json();
+          // support both {code: "..."} and raw text in a field
+          resultText = data.code ?? data?.result ?? JSON.stringify(data);
+        } else {
+          resultText = await response.text();
+        }
+
+        if (!response.ok) {
+          codeOutput.textContent = 'Error: backend returned status ' + response.status + '. Response: ' + resultText;
+        } else {
+          codeOutput.textContent = resultText;
+        }
+        output.classList.remove('hidden');
+      } catch (err) {
+        codeOutput.textContent = 'Error: Could not connect to backend. Make sure n8n is running and CORS is enabled. ' + err.message;
+        output.classList.remove('hidden');
+      } finally {
+        loading.classList.add('hidden');
+      }
+    });
+
+    copyBtn.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(codeOutput.textContent);
+        copyBtn.textContent = 'Copied!';
+        setTimeout(() => copyBtn.textContent = 'Copy Code', 2000);
+      } catch { alert('Unable to copy'); }
+    });
+
+    openPreview.addEventListener('click', () => {
+      const code = codeOutput.textContent || '';
+      const previewWindow = window.open('', '_blank');
+      previewWindow.document.open();
+      previewWindow.document.write(code);
+      previewWindow.document.close();
+    });
+  </script>
+</body>
+</html>

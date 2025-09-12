@@ -1,0 +1,99 @@
+{
+  "name": "Vibe Coding Prototype n8n",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "8f156b9e-85b7-4c1e-9d7b-68b7ead8af03",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -208,
+        0
+      ],
+      "id": "7885deb4-9fd7-4bba-8c91-9c18c5a28ba6",
+      "name": "Webhook",
+      "webhookId": "8f156b9e-85b7-4c1e-9d7b-68b7ead8af03"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=YOUR_API_KEY_HERE",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"contents\": [\n    {\n      \"parts\": [\n        {\n          \"text\": \"Generate a single HTML code block for a UI component based on the user's prompt. Include all necessary CSS within a `<style>` tag at the top. Do not include <html>, <head>, <body>, or any other wrapper tags. Respond with only the raw, complete code. Do not provide any explanation, comments, or additional text. Prompt: {{$json.prompt}}\"\n        }\n      ]\n    }\n  ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "5e7dece2-cd8c-4f56-b91e-c745cec20e6c",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json.candidates[0].content.parts[0].text }}\n\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        224,
+        0
+      ],
+      "id": "e2a39923-03d9-4162-92ee-4ace61595f1f",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "d8c6ce2b-3a48-4d13-be2c-fa46376bd9ed",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a89c99c847c2c8ecdf3ee3a735a70abcbdfe3121734d15f8f6b3b5ff98685f24"
+  },
+  "id": "H8zCAlqzg4HsgXyq",
+  "tags": []
+}
